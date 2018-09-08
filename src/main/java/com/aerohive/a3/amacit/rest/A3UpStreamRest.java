@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,28 +35,25 @@ public class A3UpStreamRest {
     @Autowired
     private RestTemplate restTemplate;
     
-    public List<AmaMessage> keepAlive() {
+    public ResponseEntity<String> keepAlive() {
         var httpHeader = AmacITUtil.getAmacHeader();
-        
         var httpBody = new HttpEntity<String>("", httpHeader);
         var url = AmacITUtil.getkeepAliveUrl(amacBase, systemId, clusterId);
-        var keepAliveRes = restTemplate.exchange(url, 
-                HttpMethod.GET, httpBody, String.class);
         
-        System.out.println(keepAliveRes);
-        return null;
+        var keepAliveRes = restTemplate.exchange(url, HttpMethod.GET, httpBody, String.class);
+        
+        return keepAliveRes;
     }
     
-    public AmaMessage onBoard(final AmaMessage onboardingMsg) {
+    public ResponseEntity<AmaMessage> onBoard(final AmaMessage onBoardMsg) {
         var httpHeader = AmacITUtil.getAmacHeader();
         
-        var httpBody = new HttpEntity<AmaMessage>(onboardingMsg, httpHeader);
+        var httpBody = new HttpEntity<AmaMessage>(onBoardMsg, httpHeader);
         var url = AmacITUtil.getOnboardUrl(amacBase, systemId);
         
         var result = restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage.class);
         
-        System.out.println(result);
-        return result.getBody();
+        return result;
     }
     
     public AmaMessage synReport(final AmaMessage synMessage) {

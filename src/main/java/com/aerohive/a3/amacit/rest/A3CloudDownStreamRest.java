@@ -28,14 +28,26 @@ public class A3CloudDownStreamRest {
     @Autowired
     private RestTemplate restTemplate;
     
-    public void pushMessages(final List<AmaMessage> message) {
+    public void pushMessages(final List<AmaMessage> messages) {
         var httpHeader = AmacITUtil.getAmacBasicAuthHeader();
         
-        var httpBody = new HttpEntity<List<AmaMessage>>(message, httpHeader);
+        var httpBody = new HttpEntity<List<AmaMessage>>(messages, httpHeader);
         var url = AmacITUtil.getCloutMessagePushUrl(amacBase);
         
         var result = restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage.class);
         
         System.out.println(result);
+    }
+    
+    public AmaMessage pushSynMessage(final AmaMessage message) {
+        var httpHeader = AmacITUtil.getAmacBasicAuthHeader();
+        
+        var httpBody = new HttpEntity<AmaMessage>(message, httpHeader);
+        var url = AmacITUtil.getCloutMessageSynPushUrl(amacBase);
+        
+        var result = restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage.class);
+        
+        System.out.println(result);
+        return result.getBody();
     }
 }

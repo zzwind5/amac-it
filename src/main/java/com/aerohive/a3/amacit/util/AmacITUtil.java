@@ -3,8 +3,14 @@
  */
 package com.aerohive.a3.amacit.util;
 
+
+
+import java.util.Base64;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+
+
 
 /**
  * @author zjie
@@ -17,10 +23,13 @@ public class AmacITUtil {
     }
     
     public static HttpHeaders getAmacBasicAuthHeader() {
+        var userNamePassword="admin:Aerohive123";
+        var base64userNamePassword = new String(Base64.getEncoder().encodeToString(userNamePassword.getBytes()) );
+        System.out.println(base64userNamePassword);
+        
         HttpHeaders header = new HttpHeaders();
-        MediaType type = MediaType.parseMediaType("application/json");
-        header.setContentType(type);
-        header.set( "Authorization", String.format("Basic YWRtaW46QWVyb2hpdmUxMjM=") );
+        header.set( "Content-Type", "application/json");
+        header.set( "Authorization", "Basic " + base64userNamePassword );
         
         return header;
     }
@@ -71,5 +80,9 @@ public class AmacITUtil {
     
     public static String getCloutMessagePushUrl(final String amacBase) {
         return String.format("%s/amac/rest/message/push/asyn", amacBase);
+    }
+    
+    public static String getCloutMessageSynPushUrl(final String amacBase) {
+        return String.format("%s/amac/rest/message/push/syn", amacBase);
     }
 }
