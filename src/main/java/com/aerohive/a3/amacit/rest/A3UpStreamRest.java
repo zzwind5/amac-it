@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.aerohive.a3.ama.message.AmaMessage;
 import com.aerohive.a3.amacit.util.AmacITUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author zjie
@@ -35,12 +36,12 @@ public class A3UpStreamRest {
     @Autowired
     private RestTemplate restTemplate;
     
-    public ResponseEntity<String> keepAlive() {
+    public ResponseEntity<AmaMessage[]> keepAlive() {
         var httpHeader = AmacITUtil.getAmacHeader();
         var httpBody = new HttpEntity<String>("", httpHeader);
         var url = AmacITUtil.getkeepAliveUrl(amacBase, systemId, clusterId);
         
-        var keepAliveRes = restTemplate.exchange(url, HttpMethod.GET, httpBody, String.class);
+        var keepAliveRes = restTemplate.exchange(url, HttpMethod.GET, httpBody, AmaMessage[].class);
         
         return keepAliveRes;
     }
@@ -56,26 +57,21 @@ public class A3UpStreamRest {
         return result;
     }
     
-    public AmaMessage synReport(final AmaMessage synMessage) {
+    public ResponseEntity<AmaMessage> synReport(final AmaMessage synMessage) {
         var httpHeader = AmacITUtil.getAmacHeader();
         
         var httpBody = new HttpEntity<AmaMessage>(synMessage, httpHeader);
         var url = AmacITUtil.getSynMessageUrl(amacBase, systemId);
         
-        var result = restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage.class);
-        
-        System.out.println(result);
-        return result.getBody();
+        return restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage.class);
     }
     
-    public void reportMessage(final List<AmaMessage> messages) {
+    public ResponseEntity<String> reportMessage(final List<AmaMessage> messages) {
         var httpHeader = AmacITUtil.getAmacHeader();
         
         var httpBody = new HttpEntity<List<AmaMessage>>(messages, httpHeader);
         var url = AmacITUtil.getReportUrl(amacBase, systemId);
         
-        var result = restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage.class);
-        
-        System.out.println(result);
+        return restTemplate.exchange(url, HttpMethod.POST, httpBody, String.class);
     }
 }

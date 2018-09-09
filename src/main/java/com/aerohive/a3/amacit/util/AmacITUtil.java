@@ -46,6 +46,17 @@ public class AmacITUtil {
         return header;
     }
     
+    public static void executeDelay(final Runnable runable, final long delayMs) {
+        new Thread( () -> {
+            try {
+                Thread.sleep(delayMs);
+            } catch (InterruptedException e) {
+            }
+            
+            runable.run();
+        }).start();
+    }
+    
     public static String getGdcUrl(final String gdcBase) {
         return gdcBase + "/oauth/cookietoken";
     }

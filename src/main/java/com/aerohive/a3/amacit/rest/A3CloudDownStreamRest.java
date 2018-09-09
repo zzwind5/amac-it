@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,26 +29,21 @@ public class A3CloudDownStreamRest {
     @Autowired
     private RestTemplate restTemplate;
     
-    public void pushMessages(final List<AmaMessage> messages) {
+    public ResponseEntity<AmaMessage[]> pushMessages(final List<AmaMessage> messages) {
         var httpHeader = AmacITUtil.getAmacBasicAuthHeader();
         
         var httpBody = new HttpEntity<List<AmaMessage>>(messages, httpHeader);
         var url = AmacITUtil.getCloutMessagePushUrl(amacBase);
         
-        var result = restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage.class);
-        
-        System.out.println(result);
+        return restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage[].class);
     }
     
-    public AmaMessage pushSynMessage(final AmaMessage message) {
+    public ResponseEntity<AmaMessage> pushSynMessage(final AmaMessage message) {
         var httpHeader = AmacITUtil.getAmacBasicAuthHeader();
         
         var httpBody = new HttpEntity<AmaMessage>(message, httpHeader);
         var url = AmacITUtil.getCloutMessageSynPushUrl(amacBase);
         
-        var result = restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage.class);
-        
-        System.out.println(result);
-        return result.getBody();
+        return restTemplate.exchange(url, HttpMethod.POST, httpBody, AmaMessage.class);
     }
 }
